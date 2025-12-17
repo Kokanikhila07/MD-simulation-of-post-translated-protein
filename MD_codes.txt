@@ -1,0 +1,166 @@
+#Mucin 7 post translation MD studies
+
+#source /usr/local/gromacs/bin/GMXRC
+
+--------------------------------------------------------------------------
+
+gmx grompp -f step4.0_minimization.mdp -c step3_input.gro -r step3_input.gro -p topol.top -o em.tpr
+
+///////////////////////////////////////////////
+
+
+gmx mdrun -v -deffnm em
+
+//////////////////////////////////
+
+
+gmx make_ndx -f em.gro -o index.ndx
+
+//////////////////////////////////
+
+17 | 16 | 15  (TIP3, SOD, CLA)
+
+name 18 SOLV
+
+0 & ! 18 (system)
+
+name 19 SOLU
+
+q
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$ EQUILIBRATION STEP $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+gmx grompp -f step4.1_equilibration.mdp -c em.gro -r em.gro -p topol.top -n index.ndx -o nvt.tpr
+
+////////////////////////////////
+
+
+gmx mdrun -v -deffnm nvt -nb gpu -pin on -pme gpu -pmefft gpu -bonded gpu -update gpu
+
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$ PRODUCTION RUN STEP $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+gmx grompp -f step5_production.mdp -c nvt.gro -p topol.top -n index.ndx -o md_50.tpr
+
+//////////////////////////////////
+
+gmx mdrun -v -deffnm md -nb gpu -pin on -pme gpu -pmefft gpu -bonded gpu -update gpu
+
+//////////////////////////////////
+
+
+# To append the previous simulation
+
+gmx mdrun -v -deffnm md_50 -cpi md_50.cpt -append
+
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ ANALYSIS $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+gmx trjconv -s md_50.tpr -f md_50.xtc -o md_noPBC.xtc -pbc mol -center
+
+# group 1 protein for - centering 
+# group 0 - system for output 
+
+//////////////////////////////////
+
+gmx rms -s md_50.tpr -f md_noPBC.xtc -o rmsd.xvg -tu ns
+     
+Choose 4 ("Backbone") for least-squares fit and 
+choose 4 backbone for the group for RMSD CALCULATION
+
+///////////////////////////
+
+xmgrace rmsd.xvg
+
+//////////////////////////////////
+
+gmx rmsf -s md_50.tpr -f md_noPBC.xtc -o rmsf.xvg -res
+
+choose C-alpha
+////////////////////
+
+xmgrace rsmf.xvg
+
+//////////////////
+
+gmx gyrate -s md_50.tpr -f md_noPBC.xtc -o gyrate.xvg
+
+select protein
+
+/////////////////////////
+
+xmgrace gyrate.xvg
+
+///////////////////////
+
+gmx sasa -f md_noPBC.xtc -s md_50.tpr -o sasa.xvg
+
+select protein
+
+/////////////////////
+
+xmgrace sasa.xvg
+
+///////////////////////
+
+gmx hbond -s md_50.tpr -f md_noPBC.xtc -num hb.xvg -tu ns
+
+select protein 
+
+//////////////////////
+
+xmgrace hb.xvg
+
+///////////////////////
+
+------------DSSP analysis-----------
+
+gmx dssp -s md_50.tpr -f md_noPBC.xtc -o dssp.dat -num num.xvg -tu ns
+
+///////////////////////////
+
+xmgrace -nxy num.xvg
+
+///////////////////////////
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$4
+
+----------------------- PCA ANALYSIS ----------------------------------------------------
+gmx make_ndx -f md_50.tpr -o index.ndx
+choose:
+q
+
+///////////////////////
+gmx trjconv -s md_50.tpr -f md_50.xtc -o md_noPBC.xtc -center -pbc mol -ur compact
+choose:
+Protein and System
+//////////////////////
+
+gmx trjconv -s md_50.tpr -f md_noPBC.xtc -o md_corrected_fitted.xtc -fit rot+trans
+choose:
+Backbone and System
+
+//////////////////////
+gmx covar -s md_50.tpr -f md_corrected_fitted.xtc -n index.ndx -o pc12eigenval.xvg -v eigenvec.trr
+choose:
+C-alpha and C-alpha  
+
+/////////////////////  
+gmx anaeig -v eigenvec.trr -f md_corrected_fitted.xtc -s md_50.tpr -n index.ndx \-comp pc12eigcomp.xvg -rmsf pc12eigrmsf.xvg -2d pc12_2dproj.xvg -first 1 -last 2
+choose:
+C-alpha and C-alpha  
+
+///////////////////////
+
+gmx sham -f pc12_2dproj.xvg -notime -ls pc12_gibbs1-2.xpm
+
+
+////////////////////////
+
+gmx xpm2ps -f pc12_gibbs1-2.xpm -o gibbs1-2.eps -rainbow blue
+
+////////////////////////
+
+
+
+
