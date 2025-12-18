@@ -9,9 +9,9 @@ This project investigates the conformational and stability changes induced by Po
 ## Data and Source Structures
 
 
-| **Target Protein** | Human Mucin-7 (MUC7) | AlphaFold prediction retrieved from **UniProt**. 
-| **UniProt ID** | **Q8TAX7** | UniProt accession ID for the MUC7 protein. 
-| **Initial Structure** | `Q8TAX7_alphafold.pdb - The initial **unglycosylated** structure used as the starting point. 
+ **Target Protein** | Human Mucin-7 (MUC7) - AlphaFold prediction retrieved from **UniProt**. 
+ **UniProt ID**  **Q8TAX7** | UniProt accession ID for the MUC7 protein. 
+ **Initial Structure** | `Q8TAX7_alphafold.pdb - The initial **unglycosylated** structure used as the starting point. 
 
 
 ## Computational Methodology
