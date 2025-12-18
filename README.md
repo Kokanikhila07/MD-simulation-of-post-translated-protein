@@ -58,7 +58,7 @@ The results will indicate which degree of glycosylation (full, partial) provides
 ### File Structure
 
 * `input_files/`: Contains the files prepared by the CHARMM-GUI server.
-* `mdp_files/`: Need to modify the files given by the CHARMM-GUI server (step1_minimization.mdp, step2_equilibration.mdp, step3_productionrun.mdp).
+* `mdp_files/`: Need to modify the files given by the CHARMM-GUI server (step1_minimization.mdp, step2_equilibration.mdp, step3_production.mdp).
 * `trajectories/`: Output trajectories (`.xtc`) and log files (`.log`) from the production runs.
 * `analysis_data/`: Result files from GROMACS analysis tools (e.g., RMSD plots, Rg data).
   
