@@ -64,3 +64,11 @@ The results will indicate which degree of glycosylation (full, partial) provides
   
 ### Script file
 * `MD_codes.txt/`: Contains the codes of the simulation.
+
+---
+
+# 👩‍💻 Author
+
+**Koka Nikhila Bhavani** | Bioinformatician
+
+
